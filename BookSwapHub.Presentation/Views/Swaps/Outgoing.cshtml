@@ -1,0 +1,28 @@
+@model IEnumerable<BookSwapHub.Application.Models.SwapRequestDto>
+@{
+    ViewData["Title"] = "Outgoing Swaps";
+}
+<h2>Outgoing Swap Requests</h2>
+<table class="table table-hover align-middle">
+    <thead>
+        <tr>
+            <th>To User</th>
+            <th>From Book Id</th>
+            <th>To Book Id</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.ToUserId</td>
+                <td>@r.FromBookId</td>
+                <td>@r.ToBookId</td>
+                <td>
+                    <span class="badge bg-secondary">@r.Status</span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

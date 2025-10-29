@@ -1,0 +1,23 @@
+@model IEnumerable<BookSwapHub.Application.Models.BookDto>
+@{
+    ViewData["Title"] = "Create Swap";
+}
+<h2>Select one of your books to offer</h2>
+<form method="post" class="card p-3 shadow-sm">
+    <input type="hidden" name="toBookId" value="@ViewBag.ToBookId" />
+    <input type="hidden" name="toUserId" value="@ViewBag.ToUserId" />
+    <div class="mb-3">
+        <label class="form-label">Your Book</label>
+        <select name="fromBookId" class="form-select" required>
+            <option value="">-- Choose your book --</option>
+            @foreach (var b in Model)
+            {
+                <option value="@b.Id">@b.Title (@b.Author)</option>
+            }
+        </select>
+    </div>
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Send Request</button>
+        <a asp-controller="Books" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>

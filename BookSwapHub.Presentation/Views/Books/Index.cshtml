@@ -1,0 +1,55 @@
+@model IEnumerable<BookSwapHub.Application.Models.BookDto>
+@using Microsoft.AspNetCore.Identity
+@using BookSwapHub.Infrastructure.Entities
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@{
+    ViewData["Title"] = "Books";
+    var uid = UserManager.GetUserId(User);
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Books</h2>
+    <div>
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <a class="btn btn-primary" asp-action="Create">Post a Book</a>
+            <a class="btn btn-outline-secondary" asp-action="Mine">My Books</a>
+        }
+    </div>
+</div>
+<form method="get" class="row g-2 mb-3">
+    <div class="col-sm-8 col-md-6">
+        <input name="q" class="form-control" placeholder="Search by title or author" value="@Context.Request.Query["q"]" />
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-outline-primary" type="submit">Search</button>
+    </div>
+</form>
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+@foreach (var b in Model)
+{
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">@b.Title</h5>
+                <h6 class="card-subtitle text-muted mb-2">@b.Author</h6>
+                <p class="card-text">@b.Description</p>
+            </div>
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <small class="text-muted">Owner: @b.OwnerId</small>
+                @if (SignInManager.IsSignedIn(User) && uid != b.OwnerId)
+                {
+                    <a class="btn btn-sm btn-success" asp-controller="Swaps" asp-action="Create" asp-route-toBookId="@b.Id" asp-route-toUserId="@b.OwnerId">Request Swap</a>
+                }
+                @if (SignInManager.IsSignedIn(User) && uid == b.OwnerId)
+                {
+                    <form asp-action="Delete" method="post" class="m-0">
+                        <input type="hidden" name="id" value="@b.Id" />
+                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+}
+</div>
