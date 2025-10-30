@@ -22,6 +22,9 @@ public class BookService : IBookService
             Title = dto.Title.Trim(),
             Author = dto.Author.Trim(),
             Description = dto.Description?.Trim(),
+            Condition = dto.Condition,
+            Category = dto.Category?.Trim(),
+            ImagePath = dto.ImagePath,
             OwnerId = ownerId,
             CreatedAt = DateTime.UtcNow
         };
@@ -32,7 +35,7 @@ public class BookService : IBookService
 
     public async Task<IEnumerable<BookDto>> GetAllAsync(string? search = null, string? ownerId = null, CancellationToken ct = default)
     {
-        IQueryable<Book> q = _db.Books.AsNoTracking();
+        IQueryable<Book> q = _db.Books.AsNoTracking().Include(b => b.Owner);
         if (!string.IsNullOrWhiteSpace(search))
         {
             var s = search.Trim();
@@ -48,7 +51,7 @@ public class BookService : IBookService
 
     public async Task<BookDto?> GetByIdAsync(int id, CancellationToken ct = default)
     {
-        var entity = await _db.Books.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id, ct);
+        var entity = await _db.Books.AsNoTracking().Include(b => b.Owner).FirstOrDefaultAsync(b => b.Id == id, ct);
         return entity is null ? null : ToDto(entity);
     }
 
@@ -59,6 +62,10 @@ public class BookService : IBookService
         entity.Title = dto.Title.Trim();
         entity.Author = dto.Author.Trim();
         entity.Description = dto.Description?.Trim();
+        entity.Condition = dto.Condition;
+        entity.Category = dto.Category?.Trim();
+        if (!string.IsNullOrWhiteSpace(dto.ImagePath))
+            entity.ImagePath = dto.ImagePath;
         await _db.SaveChangesAsync(ct);
         return true;
     }
@@ -67,6 +74,11 @@ public class BookService : IBookService
     {
         var entity = await _db.Books.FirstOrDefaultAsync(b => b.Id == id, ct);
         if (entity is null || entity.OwnerId != requesterId) return false;
+
+        // Prevent deletion if there is any swap history referencing this book
+        var hasHistory = await _db.SwapRequests.AnyAsync(r => r.FromBookId == id || r.ToBookId == id, ct);
+        if (hasHistory) return false;
+
         _db.Books.Remove(entity);
         await _db.SaveChangesAsync(ct);
         return true;
@@ -79,6 +91,10 @@ public class BookService : IBookService
         Author = b.Author,
         Description = b.Description,
         OwnerId = b.OwnerId,
+        OwnerName = b.Owner?.UserName ?? string.Empty,
+        Condition = b.Condition,
+        Category = b.Category,
+        ImagePath = b.ImagePath,
         CreatedAt = b.CreatedAt
     };
 }

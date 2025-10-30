@@ -2,7 +2,20 @@
 @{
     ViewData["Title"] = "Create Swap";
 }
-<h2>Select one of your books to offer</h2>
+<h2 class="mb-3"><i class="bi bi-arrow-left-right"></i> Create Swap</h2>
+<div class="card shadow-sm mb-3">
+    <div class="card-body d-flex justify-content-between align-items-center">
+        <div>
+            <div class="small-muted">You are requesting:</div>
+            @if (ViewBag.TargetBook is BookSwapHub.Application.Models.BookDto tb)
+            {
+                <div class="fw-semibold">@tb.Title</div>
+                <div class="small-muted"><i class="bi bi-pen"></i> @tb.Author</div>
+            }
+        </div>
+        <span class="badge text-bg-light">Book #@ViewBag.ToBookId</span>
+    </div>
+</div>
 <form method="post" class="card p-3 shadow-sm">
     <input type="hidden" name="toBookId" value="@ViewBag.ToBookId" />
     <input type="hidden" name="toUserId" value="@ViewBag.ToUserId" />
@@ -17,7 +30,7 @@
         </select>
     </div>
     <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-primary">Send Request</button>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-send"></i> Send Request</button>
         <a asp-controller="Books" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
     </div>
 </form>

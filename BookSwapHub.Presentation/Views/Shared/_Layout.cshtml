@@ -1,57 +1,99 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - BookSwapHub.Presentation</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] · Book Swap Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/BookSwapHub.Presentation.styles.css" asp-append-version="true" />
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">Book Swap Hub</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Books" asp-action="Index">Books</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Books" asp-action="Mine">My Books</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Swaps" asp-action="Incoming">Swaps (Incoming)</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Swaps" asp-action="Outgoing">Swaps (Outgoing)</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
-                </div>
+<body class="bg-body-tertiary">
+    <header class="border-bottom bg-white">
+        <nav class="navbar navbar-expand-lg container py-2">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" asp-area="" asp-controller="Home" asp-action="Index">
+                <i class="bi bi-book-half text-primary"></i> Book Swap Hub
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div id="mainNav" class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Books" asp-action="Index"><i class="bi bi-collection"></i> Books</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Books" asp-action="Mine"><i class="bi bi-person-lines-fill"></i> My Books</a></li>
+                    <li class="nav-item"><a class="nav-link position-relative" asp-area="" asp-controller="Swaps" asp-action="Incoming"><i class="bi bi-bell"></i> Notifications <span class="badge bg-danger ms-1" id="notifBadge" style="display:none"></span></a></li>
+                    <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Swaps" asp-action="Outgoing"><i class="bi bi-send"></i> Outgoing</a></li>
+                </ul>
+                <partial name="_LoginPartial" />
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - Book Swap Hub
+    <main class="container py-4 min-vh-100">
+        @if (TempData["Success"] is string sMsg)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill"></i> @sMsg
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["Error"] is string eMsg)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i> @eMsg
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @RenderBody()
+    </main>
+
+    <footer class="border-top small py-3 bg-white">
+        <div class="container d-flex justify-content-between align-items-center">
+            <span>&copy; @DateTime.UtcNow.Year · Book Swap Hub</span>
+            <a href="https://getbootstrap.com" class="text-decoration-none text-muted"><i class="bi bi-bootstrap-fill"></i></a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+      // Simple header notifications: show count of pending incoming and accepted outgoing swaps
+      document.addEventListener('DOMContentLoaded', async () => {
+        try {
+          const ic = await fetch('/Swaps/Incoming');
+          // naive: if page contains "badge bg-secondary">Pending</span> occurrences, count them
+          const html = await ic.text();
+          const pending = (html.match(/>Pending<\/span>/g) || []).length;
+          if (pending > 0) {
+            const b = document.getElementById('notifBadge');
+            if (b) { b.style.display='inline-block'; b.textContent = pending; }
+          }
+        } catch {}
+      });
+      // Add show/hide toggle for all password inputs
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('input[type="password"]').forEach(inp => {
+          const wrap = document.createElement('div');
+          wrap.className = 'input-group';
+          const parent = inp.parentElement;
+          if (!parent) return;
+          parent.replaceChild(wrap, inp);
+          wrap.appendChild(inp);
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'btn btn-outline-secondary';
+          btn.innerHTML = '<i class="bi bi-eye"></i>';
+          btn.addEventListener('click', () => {
+            const isPwd = inp.type === 'password';
+            inp.type = isPwd ? 'text' : 'password';
+            btn.innerHTML = isPwd ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+          });
+          const app = document.createElement('div');
+          app.className = 'input-group-append';
+          app.appendChild(btn);
+          wrap.appendChild(app);
+        });
+      });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

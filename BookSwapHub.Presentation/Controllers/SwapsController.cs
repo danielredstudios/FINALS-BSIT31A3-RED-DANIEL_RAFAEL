@@ -43,8 +43,10 @@ public class SwapsController : Controller
     {
         var uid = _userManager.GetUserId(User)!;
         var myBooks = await _books.GetAllAsync(ownerId: uid);
+        var target = await _books.GetByIdAsync(toBookId);
         ViewBag.ToBookId = toBookId;
         ViewBag.ToUserId = toUserId;
+        ViewBag.TargetBook = target;
         return View(myBooks);
     }
 
@@ -54,7 +56,15 @@ public class SwapsController : Controller
     {
         var uid = _userManager.GetUserId(User)!;
         var dto = new CreateSwapRequestDto { ToUserId = toUserId, FromBookId = fromBookId, ToBookId = toBookId };
-        await _swaps.CreateRequestAsync(dto, uid);
+        try
+        {
+            await _swaps.CreateRequestAsync(dto, uid);
+            TempData["Success"] = "Swap request sent.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["Error"] = ex.Message;
+        }
         return RedirectToAction(nameof(Outgoing));
     }
 
@@ -64,7 +74,18 @@ public class SwapsController : Controller
     {
         var uid = _userManager.GetUserId(User)!;
         var status = decision.Equals("accept", StringComparison.OrdinalIgnoreCase) ? SwapStatus.Accepted : SwapStatus.Rejected;
-        await _swaps.RespondAsync(id, uid, status);
+        var ok = await _swaps.RespondAsync(id, uid, status);
+        TempData[ok ? "Success" : "Error"] = ok ? (status == SwapStatus.Accepted ? "Swap accepted." : "Swap rejected.") : "Unable to respond to this swap.";
         return RedirectToAction(nameof(Incoming));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Cancel(int id)
+    {
+        var uid = _userManager.GetUserId(User)!;
+        var ok = await _swaps.CancelAsync(id, uid);
+        TempData[ok ? "Success" : "Error"] = ok ? "Swap request cancelled." : "Unable to cancel this request.";
+        return RedirectToAction(nameof(Outgoing));
     }
 }

@@ -1,8 +1,42 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Home";
 }
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="hero p-4 p-md-5 mb-4">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+            <h1 class="display-5 fw-bold mb-3">Swap books with a modern, simple experience</h1>
+            <p class="lead mb-4">Post your collection, request trades, and expand your reading list with others in the community.</p>
+            <div class="d-flex gap-2">
+                <a class="btn btn-primary btn-lg" asp-controller="Books" asp-action="Index"><i class="bi bi-collection"></i> Browse Books</a>
+                <a class="btn btn-outline-secondary btn-lg" asp-area="Identity" asp-page="/Account/Register"><i class="bi bi-person-plus"></i> Join now</a>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="display-6 text-primary"><i class="bi bi-arrow-left-right"></i></div>
+                        <div>
+                            <div class="fw-semibold">Request a swap in seconds</div>
+                            <div class="small-muted">Choose one of your books and propose a trade. Simple and fast.</div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="display-6 text-success"><i class="bi bi-shield-check"></i></div>
+                        <div>
+                            <div class="fw-semibold">Secure accounts</div>
+                            <div class="small-muted">Strong password policy built-in to keep your account safe.</div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="display-6 text-warning"><i class="bi bi-stars"></i></div>
+                        <div>
+                            <div class="fw-semibold">Modern, clean UI</div>
+                            <div class="small-muted">Optimized for clarity and speed using Bootstrap 5.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,29 @@
+@model IEnumerable<BookSwapHub.Application.Models.BookDto>
+@{
+    var user = (BookSwapHub.Infrastructure.Entities.ApplicationUser)ViewBag.User;
+    ViewData["Title"] = user.UserName + "'s Profile";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h2 class="mb-0">@user.UserName</h2>
+    <div class="small-muted">Books by this user</div>
+  </div>
+</div>
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+@foreach (var b in Model)
+{
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title mb-1"><a asp-controller="Books" asp-action="Details" asp-route-id="@b.Id" class="text-decoration-none">@b.Title</a></h5>
+                <div class="small-muted mb-2"><i class="bi bi-pen"></i> @b.Author</div>
+                @if (!string.IsNullOrWhiteSpace(b.ImagePath))
+                {
+                    <img src="@b.ImagePath" class="img-fluid rounded mb-2" alt="cover" />
+                }
+                <p class="card-text">@b.Description</p>
+            </div>
+        </div>
+    </div>
+}
+</div>

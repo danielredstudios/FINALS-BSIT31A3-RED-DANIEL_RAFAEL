@@ -27,17 +27,14 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
-    options.Password.RequireDigit = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireDigit = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredLength = 8;
 })
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders()
 .AddDefaultUI();
-
-// Custom password complexity validator (>=2 uppercase, >=3 numbers, >=3 symbols)
-builder.Services.AddTransient<IPasswordValidator<ApplicationUser>, ComplexPasswordValidator>();
 
 // App services
 builder.Services.AddScoped<IBookService, BookService>();
@@ -62,6 +59,21 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Disable/redirect built-in 2FA pages to keep flows basic
+app.Use(async (ctx, next) =>
+{
+    var p = ctx.Request.Path.Value ?? string.Empty;
+    if (p.Contains("/Identity/Account/LoginWith2fa", StringComparison.OrdinalIgnoreCase) ||
+        p.Contains("/Identity/Account/Manage/TwoFactorAuthentication", StringComparison.OrdinalIgnoreCase) ||
+        p.Contains("/Identity/Account/Manage/EnableAuthenticator", StringComparison.OrdinalIgnoreCase) ||
+        p.Contains("/Identity/Account/Manage/ResetAuthenticator", StringComparison.OrdinalIgnoreCase))
+    {
+        ctx.Response.Redirect("/");
+        return;
+    }
+    await next();
+});
 
 app.UseStaticFiles();
 

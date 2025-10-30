@@ -7,22 +7,27 @@
     ViewData["Title"] = "Books";
     var uid = UserManager.GetUserId(User);
 }
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="mb-0">Books</h2>
-    <div>
+<section class="hero p-4 p-md-5 mb-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+        <div>
+            <h1 class="display-6 fw-bold mb-1">Discover, Post, and Swap Books</h1>
+            <p class="small-muted mb-0">List your books, request trades, and grow your library with the community.</p>
+        </div>
         @if (SignInManager.IsSignedIn(User))
         {
-            <a class="btn btn-primary" asp-action="Create">Post a Book</a>
-            <a class="btn btn-outline-secondary" asp-action="Mine">My Books</a>
+            <div class="d-flex gap-2">
+                <a class="btn btn-primary" asp-action="Create"><i class="bi bi-plus-lg"></i> Post a Book</a>
+                <a class="btn btn-outline-secondary" asp-action="Mine"><i class="bi bi-person-lines-fill"></i> My Books</a>
+            </div>
         }
     </div>
-</div>
+</section>
 <form method="get" class="row g-2 mb-3">
     <div class="col-sm-8 col-md-6">
         <input name="q" class="form-control" placeholder="Search by title or author" value="@Context.Request.Query["q"]" />
     </div>
     <div class="col-auto">
-        <button class="btn btn-outline-primary" type="submit">Search</button>
+        <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i> Search</button>
     </div>
 </form>
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
@@ -31,23 +36,29 @@
     <div class="col">
         <div class="card h-100 shadow-sm">
             <div class="card-body">
-                <h5 class="card-title">@b.Title</h5>
-                <h6 class="card-subtitle text-muted mb-2">@b.Author</h6>
+                <h5 class="card-title mb-1"><a asp-action="Details" asp-route-id="@b.Id" class="text-decoration-none">@b.Title</a></h5>
+                <div class="small-muted mb-2"><i class="bi bi-pen"></i> @b.Author</div>
+                @if (!string.IsNullOrWhiteSpace(b.ImagePath))
+                {
+                    <img src="@b.ImagePath" class="img-fluid rounded mb-2" alt="cover" />
+                }
                 <p class="card-text">@b.Description</p>
             </div>
-            <div class="card-footer d-flex justify-content-between align-items-center">
-                <small class="text-muted">Owner: @b.OwnerId</small>
+            <div class="card-footer d-flex justify-content-between align-items-center bg-white">
+<span class="badge text-bg-light"><i class="bi bi-person"></i> @(!string.IsNullOrWhiteSpace(b.OwnerName) ? b.OwnerName : "Unknown")</span>
+                <div class="d-flex gap-2">
                 @if (SignInManager.IsSignedIn(User) && uid != b.OwnerId)
                 {
-                    <a class="btn btn-sm btn-success" asp-controller="Swaps" asp-action="Create" asp-route-toBookId="@b.Id" asp-route-toUserId="@b.OwnerId">Request Swap</a>
+                    <a class="btn btn-sm btn-success" asp-controller="Swaps" asp-action="Create" asp-route-toBookId="@b.Id" asp-route-toUserId="@b.OwnerId"><i class="bi bi-arrow-left-right"></i> Request</a>
                 }
                 @if (SignInManager.IsSignedIn(User) && uid == b.OwnerId)
                 {
                     <form asp-action="Delete" method="post" class="m-0">
                         <input type="hidden" name="id" value="@b.Id" />
-                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
                     </form>
                 }
+                </div>
             </div>
         </div>
     </div>

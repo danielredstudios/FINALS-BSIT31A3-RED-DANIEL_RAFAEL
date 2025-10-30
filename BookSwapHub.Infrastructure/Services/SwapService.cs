@@ -60,6 +60,17 @@ public class SwapService : ISwapService
             var tempOwner = fromBook.OwnerId;
             fromBook.OwnerId = toBook.OwnerId;
             toBook.OwnerId = tempOwner;
+
+            // Invalidate other pending requests involving either book
+            var relatedPending = await _db.SwapRequests
+                .Where(r => r.Status == SwapStatus.Pending && r.Id != req.Id &&
+                            (r.FromBookId == req.FromBookId || r.ToBookId == req.FromBookId ||
+                             r.FromBookId == req.ToBookId   || r.ToBookId == req.ToBookId))
+                .ToListAsync(ct);
+            foreach (var other in relatedPending)
+            {
+                other.Status = SwapStatus.Cancelled; // cancelled: book no longer available
+            }
         }
 
         req.Status = status;
@@ -70,6 +81,8 @@ public class SwapService : ISwapService
     public async Task<IEnumerable<SwapRequestDto>> GetIncomingAsync(string userId, CancellationToken ct = default)
     {
         var list = await _db.SwapRequests.AsNoTracking()
+            .Include(r => r.FromBook)
+            .Include(r => r.ToBook)
             .Where(r => r.ToUserId == userId)
             .OrderByDescending(r => r.CreatedAt)
             .ToListAsync(ct);
@@ -79,10 +92,22 @@ public class SwapService : ISwapService
     public async Task<IEnumerable<SwapRequestDto>> GetOutgoingAsync(string userId, CancellationToken ct = default)
     {
         var list = await _db.SwapRequests.AsNoTracking()
+            .Include(r => r.FromBook)
+            .Include(r => r.ToBook)
             .Where(r => r.FromUserId == userId)
             .OrderByDescending(r => r.CreatedAt)
             .ToListAsync(ct);
         return list.Select(ToDto);
+    }
+
+    public async Task<bool> CancelAsync(int requestId, string requesterUserId, CancellationToken ct = default)
+    {
+        var req = await _db.SwapRequests.FirstOrDefaultAsync(r => r.Id == requestId, ct);
+        if (req is null || req.FromUserId != requesterUserId || req.Status != SwapStatus.Pending)
+            return false;
+        req.Status = SwapStatus.Cancelled;
+        await _db.SaveChangesAsync(ct);
+        return true;
     }
 
     private static SwapRequestDto ToDto(SwapRequest r) => new()
@@ -91,7 +116,11 @@ public class SwapService : ISwapService
         FromUserId = r.FromUserId,
         ToUserId = r.ToUserId,
         FromBookId = r.FromBookId,
+        FromBookTitle = r.FromBook?.Title,
+        FromBookAuthor = r.FromBook?.Author,
         ToBookId = r.ToBookId,
+        ToBookTitle = r.ToBook?.Title,
+        ToBookAuthor = r.ToBook?.Author,
         Status = r.Status,
         CreatedAt = r.CreatedAt
     };

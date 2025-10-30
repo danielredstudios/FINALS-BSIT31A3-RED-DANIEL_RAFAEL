@@ -8,7 +8,11 @@ public record SwapRequestDto
     public string FromUserId { get; init; } = string.Empty;
     public string ToUserId { get; init; } = string.Empty;
     public int FromBookId { get; init; }
+    public string? FromBookTitle { get; init; }
+    public string? FromBookAuthor { get; init; }
     public int ToBookId { get; init; }
+    public string? ToBookTitle { get; init; }
+    public string? ToBookAuthor { get; init; }
     public SwapStatus Status { get; init; }
     public DateTime CreatedAt { get; init; }
 }

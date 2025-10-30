@@ -1,0 +1,42 @@
+@model BookSwapHub.Application.Models.BookDto
+@using Microsoft.AspNetCore.Identity
+@using BookSwapHub.Infrastructure.Entities
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@{
+    ViewData["Title"] = Model.Title;
+    var uid = UserManager.GetUserId(User);
+}
+<div class="row g-4">
+  <div class="col-md-5">
+    <div class="card shadow-sm">
+      <div class="ratio ratio-3x4">
+        <img src="@(string.IsNullOrWhiteSpace(Model.ImagePath) ? "https://placehold.co/600x800?text=No+Image" : Model.ImagePath)" class="card-img-top object-fit-cover" alt="Book cover" />
+      </div>
+      <div class="card-body">
+        <div class="mb-2"><span class="badge text-bg-light"><i class="bi bi-tag"></i> @Model.Category</span></div>
+        <div class="small-muted">Condition: <strong>@Model.Condition</strong></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-7">
+    <h2 class="mb-1">@Model.Title</h2>
+    <div class="mb-3 small-muted"><i class="bi bi-pen"></i> @Model.Author</div>
+    <p>@Model.Description</p>
+    <div class="mb-3">Owner: <a asp-controller="Users" asp-action="Profile" asp-route-id="@Model.OwnerId">@Model.OwnerName</a></div>
+    <div class="d-flex gap-2">
+      @if (SignInManager.IsSignedIn(User) && uid != Model.OwnerId)
+      {
+        <a class="btn btn-success" asp-controller="Swaps" asp-action="Create" asp-route-toBookId="@Model.Id" asp-route-toUserId="@Model.OwnerId"><i class="bi bi-arrow-left-right"></i> Request Swap</a>
+      }
+      @if (SignInManager.IsSignedIn(User) && uid == Model.OwnerId)
+      {
+        <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@Model.Id"><i class="bi bi-pencil-square"></i> Edit</a>
+        <form asp-action="Delete" method="post" class="d-inline">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <button class="btn btn-outline-danger"><i class="bi bi-trash"></i> Delete</button>
+        </form>
+      }
+    </div>
+  </div>
+</div>

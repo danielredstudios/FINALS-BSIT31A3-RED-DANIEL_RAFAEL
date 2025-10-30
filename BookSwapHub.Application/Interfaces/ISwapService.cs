@@ -9,4 +9,5 @@ public interface ISwapService
     Task<bool> RespondAsync(int requestId, string responderUserId, SwapStatus status, CancellationToken ct = default);
     Task<IEnumerable<SwapRequestDto>> GetIncomingAsync(string userId, CancellationToken ct = default);
     Task<IEnumerable<SwapRequestDto>> GetOutgoingAsync(string userId, CancellationToken ct = default);
+    Task<bool> CancelAsync(int requestId, string requesterUserId, CancellationToken ct = default);
 }
