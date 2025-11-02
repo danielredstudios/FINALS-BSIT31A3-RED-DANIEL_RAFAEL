@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var useInMemory = builder.Configuration.GetValue("UseInMemory", true);
+var useInMemory = builder.Configuration.GetValue("UseInMemory", false);
 if (useInMemory)
 {
     builder.Services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("BookSwapHubDb"));
@@ -27,11 +27,9 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
-    options.Password.RequireDigit = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredLength = 8;
 })
+.AddPasswordValidator<ComplexPasswordValidator>()
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders()
 .AddDefaultUI();
@@ -43,6 +41,14 @@ builder.Services.AddScoped<ISwapService, SwapService>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+// Apply EF Core migrations automatically in non-InMemory mode (code-first)
+if (!useInMemory)
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

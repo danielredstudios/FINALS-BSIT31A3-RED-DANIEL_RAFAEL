@@ -5,6 +5,7 @@ using BookSwapHub.Infrastructure.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace BookSwapHub.Presentation.Controllers;
 
@@ -87,5 +88,15 @@ public class SwapsController : Controller
         var ok = await _swaps.CancelAsync(id, uid);
         TempData[ok ? "Success" : "Error"] = ok ? "Swap request cancelled." : "Unable to cancel this request.";
         return RedirectToAction(nameof(Outgoing));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> CountPending()
+    {
+        var uid = _userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(uid)) return Unauthorized();
+        var list = await _swaps.GetIncomingAsync(uid);
+        var pending = list.Count(r => r.Status == SwapStatus.Pending);
+        return Json(new { pending });
     }
 }

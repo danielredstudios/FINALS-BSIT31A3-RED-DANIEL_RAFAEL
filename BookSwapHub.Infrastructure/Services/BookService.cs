@@ -91,7 +91,9 @@ public class BookService : IBookService
         Author = b.Author,
         Description = b.Description,
         OwnerId = b.OwnerId,
-        OwnerName = b.Owner?.UserName ?? string.Empty,
+        OwnerName = (b.Owner is not null && (!string.IsNullOrWhiteSpace(b.Owner.FirstName) || !string.IsNullOrWhiteSpace(b.Owner.LastName)))
+            ? ($"{b.Owner.FirstName} {b.Owner.LastName}".Trim())
+            : (b.Owner?.UserName ?? string.Empty),
         Condition = b.Condition,
         Category = b.Category,
         ImagePath = b.ImagePath,
