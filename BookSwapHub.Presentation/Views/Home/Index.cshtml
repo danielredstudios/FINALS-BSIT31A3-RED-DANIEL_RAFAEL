@@ -4,97 +4,38 @@
 <section class="hero p-4 p-md-5 mb-4">
     <div class="row align-items-center g-4">
         <div class="col-lg-7">
-            <div class="mb-3">
-                <span class="badge bg-primary-subtle text-primary-emphasis px-3 py-2">
-                    <i class="bi bi-stars"></i> Welcome to Book Swap Hub
-                </span>
-            </div>
-            <h1 class="display-4 fw-bold mb-3">Swap books with a modern, simple experience</h1>
-            <p class="lead mb-4 text-muted">Post your collection, request trades, and expand your reading list with others in the community. Share your love for books!</p>
-            <div class="d-flex flex-wrap gap-2">
-                <a class="btn btn-primary btn-lg px-4" asp-controller="Books" asp-action="Index"><i class="bi bi-collection"></i> Browse Books</a>
-                <a class="btn btn-outline-secondary btn-lg px-4" asp-area="Identity" asp-page="/Account/Register"><i class="bi bi-person-plus"></i> Join Now</a>
-            </div>
-            <div class="mt-4 d-flex gap-4 small text-muted">
-                <div><i class="bi bi-check-circle-fill text-success"></i> Free to use</div>
-                <div><i class="bi bi-check-circle-fill text-success"></i> Secure & Safe</div>
-                <div><i class="bi bi-check-circle-fill text-success"></i> Easy to swap</div>
+            <h1 class="display-5 fw-bold mb-3">Swap books with a modern, simple experience</h1>
+            <p class="lead mb-4">Post your collection, request trades, and expand your reading list with others in the community.</p>
+            <div class="d-flex gap-2">
+                <a class="btn btn-primary btn-lg" asp-controller="Books" asp-action="Index"><i class="bi bi-collection"></i> Browse Books</a>
+                <a class="btn btn-outline-secondary btn-lg" asp-area="Identity" asp-page="/Account/Register"><i class="bi bi-person-plus"></i> Join now</a>
             </div>
         </div>
         <div class="col-lg-5">
-            <div class="card shadow-lg border-0">
-                <div class="card-body p-4">
-                    <h5 class="card-title fw-bold mb-4">Why Choose Us?</h5>
-                    <div class="d-flex align-items-start gap-3 mb-4">
-                        <div class="flex-shrink-0">
-                            <div class="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                <i class="bi bi-arrow-left-right fs-4"></i>
-                            </div>
-                        </div>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="display-6 text-primary"><i class="bi bi-arrow-left-right"></i></div>
                         <div>
-                            <div class="fw-semibold mb-1">Request a swap in seconds</div>
-                            <div class="small text-muted">Choose one of your books and propose a trade. Simple and fast.</div>
+                            <div class="fw-semibold">Request a swap in seconds</div>
+                            <div class="small-muted">Choose one of your books and propose a trade. Simple and fast.</div>
                         </div>
                     </div>
-                    <div class="d-flex align-items-start gap-3 mb-4">
-                        <div class="flex-shrink-0">
-                            <div class="bg-success bg-opacity-10 text-success rounded-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                <i class="bi bi-shield-check fs-4"></i>
-                            </div>
-                        </div>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="display-6 text-success"><i class="bi bi-shield-check"></i></div>
                         <div>
-                            <div class="fw-semibold mb-1">Secure accounts</div>
-                            <div class="small text-muted">Strong password policy built-in to keep your account safe.</div>
+                            <div class="fw-semibold">Secure accounts</div>
+                            <div class="small-muted">Strong password policy built-in to keep your account safe.</div>
                         </div>
                     </div>
-                    <div class="d-flex align-items-start gap-3">
-                        <div class="flex-shrink-0">
-                            <div class="bg-warning bg-opacity-10 text-warning rounded-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                <i class="bi bi-stars fs-4"></i>
-                            </div>
-                        </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="display-6 text-warning"><i class="bi bi-stars"></i></div>
                         <div>
-                            <div class="fw-semibold mb-1">Modern, clean UI</div>
-                            <div class="small text-muted">Optimized for clarity and speed with responsive design.</div>
+                            <div class="fw-semibold">Modern, clean UI</div>
+                            <div class="small-muted">Optimized for clarity and speed using Bootstrap 5.</div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="row g-4 mb-5">
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm border-0">
-            <div class="card-body text-center p-4">
-                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
-                    <i class="bi bi-1-circle fs-1"></i>
-                </div>
-                <h5 class="fw-bold">Post Your Books</h5>
-                <p class="text-muted small">List books you're willing to trade with photos and descriptions.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm border-0">
-            <div class="card-body text-center p-4">
-                <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
-                    <i class="bi bi-2-circle fs-1"></i>
-                </div>
-                <h5 class="fw-bold">Find Books</h5>
-                <p class="text-muted small">Browse the community collection and discover books you want to read.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm border-0">
-            <div class="card-body text-center p-4">
-                <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
-                    <i class="bi bi-3-circle fs-1"></i>
-                </div>
-                <h5 class="fw-bold">Make the Swap</h5>
-                <p class="text-muted small">Request trades and connect with other book lovers in your area.</p>
             </div>
         </div>
     </div>

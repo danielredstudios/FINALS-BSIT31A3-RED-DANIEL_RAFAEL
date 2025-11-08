@@ -40,23 +40,6 @@ builder.Services.AddScoped<ISwapService, SwapService>();
 
 builder.Services.AddControllersWithViews();
 
-// Configure request size limits for file uploads
-builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
-{
-    options.MultipartBodyLengthLimit = 50 * 1024 * 1024; // 50 MB limit
-    options.ValueLengthLimit = int.MaxValue;
-    options.MultipartBoundaryLengthLimit = int.MaxValue;
-    options.MultipartHeadersLengthLimit = int.MaxValue;
-});
-
-// Configure Kestrel server limits
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-    serverOptions.Limits.MaxRequestBodySize = 50 * 1024 * 1024; // 50 MB limit
-    serverOptions.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(2);
-    serverOptions.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(1);
-});
-
 var app = builder.Build();
 
 // Apply EF Core migrations automatically in non-InMemory mode (code-first)

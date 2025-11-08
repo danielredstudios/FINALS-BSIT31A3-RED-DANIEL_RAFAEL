@@ -28,18 +28,8 @@
             <input asp-for="Category" class="form-control" placeholder="e.g. Fantasy" />
         </div>
         <div class="col-sm-4">
-            <label class="form-label">Cover image (optional)</label>
-            <input type="file" name="image" id="bookImage" class="form-control" accept=".jpg,.jpeg,.png,.gif,.bmp" />
-            <span asp-validation-for="ImagePath" class="text-danger"></span>
-            <div class="text-danger">@ViewData.ModelState["image"]?.Errors.FirstOrDefault()?.ErrorMessage</div>
-            <small class="form-text text-muted">Max 10 MB. Formats: JPG, PNG, GIF, BMP</small>
-            @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
-            {
-                <div class="mt-2">
-                    <small class="text-muted">Current image:</small><br/>
-                    <img src="@Model.ImagePath" alt="Current cover" class="img-thumbnail" style="max-width: 200px; max-height: 200px;" />
-                </div>
-            }
+            <label class="form-label">Cover image</label>
+            <input type="file" name="image" class="form-control" accept="image/*" />
         </div>
     </div>
     <div class="d-flex gap-2 mt-3">
