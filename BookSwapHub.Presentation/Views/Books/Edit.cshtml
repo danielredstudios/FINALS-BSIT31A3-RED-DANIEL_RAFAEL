@@ -28,18 +28,17 @@
             <input asp-for="Category" class="form-control" placeholder="e.g. Fantasy" />
         </div>
         <div class="col-sm-4">
-            <label class="form-label">Cover image</label>
-            <input type="file" name="image" id="bookImage" class="form-control" accept="image/*" />
+            <label class="form-label">Cover image (optional)</label>
+            <input type="file" name="image" id="bookImage" class="form-control" accept=".jpg,.jpeg,.png,.gif,.bmp" />
             <span asp-validation-for="ImagePath" class="text-danger"></span>
             <div class="text-danger">@ViewData.ModelState["image"]?.Errors.FirstOrDefault()?.ErrorMessage</div>
-            <small class="form-text text-muted">Maximum file size: 10 MB. Allowed formats: JPG, PNG, GIF, BMP</small>
+            <small class="form-text text-muted">Max 10 MB. Formats: JPG, PNG, GIF, BMP</small>
             @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
             {
-                <img id="imagePreview" class="image-preview img-fluid show" src="@Model.ImagePath" alt="Current cover" />
-            }
-            else
-            {
-                <img id="imagePreview" class="image-preview img-fluid" alt="Preview" />
+                <div class="mt-2">
+                    <small class="text-muted">Current image:</small><br/>
+                    <img src="@Model.ImagePath" alt="Current cover" class="img-thumbnail" style="max-width: 200px; max-height: 200px;" />
+                </div>
             }
         </div>
     </div>
@@ -50,19 +49,4 @@
 </form>
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        // Image preview functionality
-        document.getElementById('bookImage')?.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            const preview = document.getElementById('imagePreview');
-            if (file && preview) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.classList.add('show');
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    </script>
 }

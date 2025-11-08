@@ -88,7 +88,8 @@ public class BooksController : Controller
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [RequestSizeLimit(10 * 1024 * 1024)] // 10 MB limit
+    [RequestSizeLimit(50 * 1024 * 1024)] // 50 MB limit
+    [DisableRequestSizeLimit] // Allow large file uploads
     public async Task<IActionResult> Create(CreateBookDto dto, IFormFile? image)
     {
         if (!ModelState.IsValid) return View(dto);
@@ -142,7 +143,8 @@ public class BooksController : Controller
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [RequestSizeLimit(10 * 1024 * 1024)] // 10 MB limit
+    [RequestSizeLimit(50 * 1024 * 1024)] // 50 MB limit
+    [DisableRequestSizeLimit] // Allow large file uploads
     public async Task<IActionResult> Edit(int id, CreateBookDto dto, IFormFile? image)
     {
         if (!ModelState.IsValid) return View(dto);
