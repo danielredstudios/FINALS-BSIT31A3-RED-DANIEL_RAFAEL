@@ -43,13 +43,28 @@ public class BooksController : Controller
     private async Task<string?> SaveImageAsync(IFormFile? image)
     {
         if (image is null || image.Length == 0) return null;
-        var uploads = Path.Combine(_env.WebRootPath, "uploads");
-        Directory.CreateDirectory(uploads);
-        var fileName = $"{Guid.NewGuid():N}{Path.GetExtension(image.FileName)}";
-        var fullPath = Path.Combine(uploads, fileName);
-        await using var stream = new FileStream(fullPath, FileMode.Create);
-        await image.CopyToAsync(stream);
-        return $"/uploads/{fileName}";
+        
+        try
+        {
+            var uploads = Path.Combine(_env.WebRootPath, "uploads");
+            Directory.CreateDirectory(uploads);
+            var fileName = $"{Guid.NewGuid():N}{Path.GetExtension(image.FileName)}";
+            var fullPath = Path.Combine(uploads, fileName);
+            
+            await using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                await image.CopyToAsync(stream);
+                await stream.FlushAsync();
+            }
+            
+            return $"/uploads/{fileName}";
+        }
+        catch (Exception ex)
+        {
+            // Log the error but don't crash the application
+            Console.WriteLine($"Error saving image: {ex.Message}");
+            return null;
+        }
     }
 
     [Authorize]
