@@ -11,11 +11,13 @@ public class BooksController : Controller
 {
     private readonly IBookService _books;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IWebHostEnvironment _env;
 
-    public BooksController(IBookService books, UserManager<ApplicationUser> userManager)
+    public BooksController(IBookService books, UserManager<ApplicationUser> userManager, IWebHostEnvironment env)
     {
         _books = books;
         _userManager = userManager;
+        _env = env;
     }
 
     [HttpGet]
@@ -41,7 +43,7 @@ public class BooksController : Controller
     private async Task<string?> SaveImageAsync(IFormFile? image)
     {
         if (image is null || image.Length == 0) return null;
-        var uploads = Path.Combine(Directory.GetCurrentDirectory(), "BookSwapHub.Presentation", "wwwroot", "uploads");
+        var uploads = Path.Combine(_env.WebRootPath, "uploads");
         Directory.CreateDirectory(uploads);
         var fileName = $"{Guid.NewGuid():N}{Path.GetExtension(image.FileName)}";
         var fullPath = Path.Combine(uploads, fileName);
