@@ -44,14 +44,31 @@ public class BooksController : Controller
     {
         if (image is null || image.Length == 0) return null;
         
+        // Validate file size (10 MB max)
+        const long maxFileSize = 10 * 1024 * 1024;
+        if (image.Length > maxFileSize)
+        {
+            Console.WriteLine($"File too large: {image.Length} bytes. Max allowed: {maxFileSize} bytes");
+            return null;
+        }
+        
+        // Validate file type
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+        var extension = Path.GetExtension(image.FileName)?.ToLowerInvariant();
+        if (string.IsNullOrEmpty(extension) || !allowedExtensions.Contains(extension))
+        {
+            Console.WriteLine($"Invalid file type: {extension}. Allowed types: {string.Join(", ", allowedExtensions)}");
+            return null;
+        }
+        
         try
         {
             var uploads = Path.Combine(_env.WebRootPath, "uploads");
             Directory.CreateDirectory(uploads);
-            var fileName = $"{Guid.NewGuid():N}{Path.GetExtension(image.FileName)}";
+            var fileName = $"{Guid.NewGuid():N}{extension}";
             var fullPath = Path.Combine(uploads, fileName);
             
-            await using (var stream = new FileStream(fullPath, FileMode.Create))
+            await using (var stream = new FileStream(fullPath, FileMode.Create, FileAccess.Write, FileShare.None))
             {
                 await image.CopyToAsync(stream);
                 await stream.FlushAsync();
@@ -63,6 +80,7 @@ public class BooksController : Controller
         {
             // Log the error but don't crash the application
             Console.WriteLine($"Error saving image: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
             return null;
         }
     }
@@ -70,9 +88,30 @@ public class BooksController : Controller
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RequestSizeLimit(10 * 1024 * 1024)] // 10 MB limit
     public async Task<IActionResult> Create(CreateBookDto dto, IFormFile? image)
     {
         if (!ModelState.IsValid) return View(dto);
+        
+        // Validate image if provided
+        if (image != null && image.Length > 0)
+        {
+            const long maxFileSize = 10 * 1024 * 1024;
+            if (image.Length > maxFileSize)
+            {
+                ModelState.AddModelError("image", $"File size must be less than 10 MB. Your file is {image.Length / 1024 / 1024:F2} MB.");
+                return View(dto);
+            }
+            
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+            var extension = Path.GetExtension(image.FileName)?.ToLowerInvariant();
+            if (string.IsNullOrEmpty(extension) || !allowedExtensions.Contains(extension))
+            {
+                ModelState.AddModelError("image", "Only image files (.jpg, .jpeg, .png, .gif, .bmp) are allowed.");
+                return View(dto);
+            }
+        }
+        
         var uid = _userManager.GetUserId(User)!;
         dto = dto with { ImagePath = await SaveImageAsync(image) };
         await _books.CreateAsync(dto, uid);
@@ -103,9 +142,30 @@ public class BooksController : Controller
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RequestSizeLimit(10 * 1024 * 1024)] // 10 MB limit
     public async Task<IActionResult> Edit(int id, CreateBookDto dto, IFormFile? image)
     {
         if (!ModelState.IsValid) return View(dto);
+        
+        // Validate image if provided
+        if (image != null && image.Length > 0)
+        {
+            const long maxFileSize = 10 * 1024 * 1024;
+            if (image.Length > maxFileSize)
+            {
+                ModelState.AddModelError("image", $"File size must be less than 10 MB. Your file is {image.Length / 1024 / 1024:F2} MB.");
+                return View(dto);
+            }
+            
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+            var extension = Path.GetExtension(image.FileName)?.ToLowerInvariant();
+            if (string.IsNullOrEmpty(extension) || !allowedExtensions.Contains(extension))
+            {
+                ModelState.AddModelError("image", "Only image files (.jpg, .jpeg, .png, .gif, .bmp) are allowed.");
+                return View(dto);
+            }
+        }
+        
         var uid = _userManager.GetUserId(User)!;
         var existing = await _books.GetByIdAsync(id);
         if (existing is null || existing.OwnerId != uid) return Forbid();

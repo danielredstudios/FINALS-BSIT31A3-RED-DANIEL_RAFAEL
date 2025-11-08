@@ -30,6 +30,9 @@
         <div class="col-sm-4">
             <label class="form-label">Cover image</label>
             <input type="file" name="image" id="bookImage" class="form-control" accept="image/*" />
+            <span asp-validation-for="ImagePath" class="text-danger"></span>
+            <div class="text-danger">@ViewData.ModelState["image"]?.Errors.FirstOrDefault()?.ErrorMessage</div>
+            <small class="form-text text-muted">Maximum file size: 10 MB. Allowed formats: JPG, PNG, GIF, BMP</small>
             @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
             {
                 <img id="imagePreview" class="image-preview img-fluid show" src="@Model.ImagePath" alt="Current cover" />
